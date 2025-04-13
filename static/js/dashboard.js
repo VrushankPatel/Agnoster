@@ -36,14 +36,18 @@ document.addEventListener('DOMContentLoaded', function() {
       
       try {
         // Try to fetch data from the backend
-        const [namespacesData, podsData, configData] = await Promise.all([
+        const [namespacesResponse, podsResponse, configData] = await Promise.all([
           ApiClient.getNamespaces(),
           ApiClient.getAllPods(),
           ApiClient.getConfig().catch(() => ({ shutdown_threshold: 14 }))
         ]);
         
-        namespaces = namespacesData;
-        pods = podsData;
+        // Check if we're in demo mode
+        usingSampleData = namespacesResponse.demo_mode || false;
+        
+        // Extract actual data from responses
+        namespaces = namespacesResponse.data || namespacesResponse;
+        pods = podsResponse.data || podsResponse;
         config = configData;
         
         // Backend connection successful
@@ -51,11 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (error) {
         console.error('Failed to fetch data from backend:', error);
         
-        // Use sample data if backend fails
-        
-        // SAMPLE DATA COMMENT: This sample data is used for demonstration purposes only.
-        // It should be removed when connecting to a real Kubernetes backend.
-        // This data simulates what the real API would return.
+        // Use fallback data if backend fails completely (should only happen if server is down)
+        // Demo mode should be handled correctly by the backend
+        usingSampleData = true;
         
         namespaces = [
           {
@@ -158,9 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show message about sample data
         Utils.showToast('Using sample data since backend connection failed. This is for demonstration purposes only.', 'info', 5000);
       }
-      
-      // Set the sample data flag based on whether backend connected
-      usingSampleData = !backendConnected;
       
       // Update stats
       updateStats();
@@ -435,23 +434,27 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       try {
         // Try to fetch updated data from the backend
-        const [namespacesData, podsData] = await Promise.all([
+        const [namespacesResponse, podsResponse] = await Promise.all([
           ApiClient.getNamespaces(),
           ApiClient.getAllPods()
         ]);
         
-        namespaces = namespacesData;
-        pods = podsData;
+        // Check if we're in demo mode
+        usingSampleData = namespacesResponse.demo_mode || false;
+        
+        // Extract data from responses
+        namespaces = namespacesResponse.data || namespacesResponse;
+        pods = podsResponse.data || podsResponse;
       } catch (error) {
         console.error('Failed to refresh data from backend:', error);
         
-        // If using sample data, no need to do anything as we already have the data
-        // In a real environment, we would retry the connection or show an error
-        
-        // We can simulate changes to make it look like we're updating data
-        // This is purely for demonstration with sample data
+        // If connection fails but we already have data, just update it
+        // This simulates time passing when connection is lost
         if (namespaces && namespaces.length > 0 && pods && pods.length > 0) {
-          // Update some pod runtimes slightly (increase by a small random amount)
+          // Set the sample data flag to true when connection fails
+          usingSampleData = true;
+          
+          // Update pod runtimes to simulate time passing
           pods.forEach(pod => {
             pod.runtime_hours += Math.random() * 0.1; // Add up to 0.1 hours (6 minutes)
             pod.runtime_hours = parseFloat(pod.runtime_hours.toFixed(2)); // Format to 2 decimal places
