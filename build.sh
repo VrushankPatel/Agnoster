@@ -1,69 +1,91 @@
 #!/bin/bash
 
-# Agnoster - Kubernetes Namespace Management System
-# Build and deployment script
+# Agnoster build script
+# This script will set up the Agnoster Kubernetes namespace management system
 
-set -e
-
-# Define colors for output
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
+# Terminal colors
 RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}===================================================${NC}"
-echo -e "${BLUE}Agnoster - Kubernetes Namespace Management System${NC}"
+echo -e "${GREEN}Agnoster - Kubernetes Namespace Management System${NC}"
 echo -e "${BLUE}===================================================${NC}"
+echo
 
-# Check if Python is available
-if ! command -v python3 &> /dev/null; then
-    echo -e "${RED}Python 3 is not installed. Please install Python 3 to continue.${NC}"
+# Check if running with appropriate permissions
+if [[ $EUID -ne 0 ]] && [[ ! -z "$REPL_OWNER" ]]; then
+    echo -e "${YELLOW}Note: Running in Replit environment.${NC}"
+elif [[ $EUID -ne 0 ]]; then
+    echo -e "${YELLOW}Note: This script is not running with root privileges.${NC}"
+    echo -e "${YELLOW}Some operations may fail.${NC}"
+    echo
+fi
+
+# Make script directory the working directory
+cd "$(dirname "$0")"
+
+# Check Python version
+echo -e "${GREEN}Checking Python version...${NC}"
+if command -v python3 &>/dev/null; then
+    PYTHON_CMD=python3
+elif command -v python &>/dev/null; then
+    PYTHON_CMD=python
+else
+    echo -e "${RED}Python not found. Please install Python 3.8 or higher.${NC}"
     exit 1
 fi
 
-# Check if pip is available
-if ! command -v pip3 &> /dev/null; then
-    echo -e "${RED}pip3 is not installed. Please install pip3 to continue.${NC}"
-    exit 1
+# Check Python version
+python_version=$($PYTHON_CMD -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+echo -e "${GREEN}Python version: $python_version${NC}"
+
+# Ensure pip is installed
+echo -e "${GREEN}Checking pip installation...${NC}"
+if ! command -v pip &>/dev/null && ! command -v pip3 &>/dev/null; then
+    echo -e "${YELLOW}pip not found. Installing pip...${NC}"
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    $PYTHON_CMD get-pip.py
+    rm get-pip.py
 fi
 
-# Check if virtual environment package is installed
-if ! python3 -c "import venv" &> /dev/null; then
-    echo -e "${YELLOW}Python venv module not found. Installing...${NC}"
-    pip3 install venv
+# Determine pip command
+if command -v pip3 &>/dev/null; then
+    PIP_CMD=pip3
+else
+    PIP_CMD=pip
 fi
-
-# Create a virtual environment if it doesn't exist
-if [ ! -d "venv" ]; then
-    echo -e "${GREEN}Creating virtual environment...${NC}"
-    python3 -m venv venv
-fi
-
-# Activate the virtual environment
-echo -e "${GREEN}Activating virtual environment...${NC}"
-source venv/bin/activate
 
 # Install dependencies
 echo -e "${GREEN}Installing dependencies...${NC}"
-pip install -r dependencies.txt
+$PIP_CMD install -r dependencies.txt
 
 # Check for PostgreSQL database
-if [ -z "${DATABASE_URL}" ]; then
+db_url=$DATABASE_URL
+if [ -z "${db_url}" ]; then
     echo -e "${YELLOW}Warning: DATABASE_URL environment variable not set.${NC}"
     echo -e "${YELLOW}Using SQLite database instead.${NC}"
-    export DATABASE_URL="sqlite:///instance/agnoster.db"
+    
+    # Create instance directory if it doesn't exist
+    mkdir -p instance
+    
+    # Using absolute path for SQLite to avoid permission issues
+    CURRENT_DIR=$(pwd)
+    export DATABASE_URL="sqlite:///${CURRENT_DIR}/instance/agnoster.db"
+    echo -e "${GREEN}SQLite database path: ${DATABASE_URL}${NC}"
 else
     echo -e "${GREEN}Using PostgreSQL database at: ${DATABASE_URL}${NC}"
 fi
 
 # Initialize the database
 echo -e "${GREEN}Initializing database...${NC}"
-python -c "from app import app, db; from models import User, Config; app.app_context().push(); db.create_all(); Config.query.first() or db.session.add(Config(shutdown_threshold=14, monitoring_interval=5)) and db.session.commit(); print('Database initialized successfully');"
+$PYTHON_CMD -c "from app import app, db; from models import User, Config; app.app_context().push(); db.create_all(); Config.query.first() or db.session.add(Config(shutdown_threshold=14, monitoring_interval=5)) and db.session.commit(); print('Database initialized successfully');"
 
 # Check if admin user exists, if not create it
 echo -e "${GREEN}Checking for admin user...${NC}"
-ADMIN_EXISTS=$(python -c "from app import app, db; from models import User; from werkzeug.security import generate_password_hash; app.app_context().push(); admin = User.query.filter_by(username='admin').first(); created = False; if not admin: admin = User(username='admin', password_hash=generate_password_hash('admin'), is_admin=True); db.session.add(admin); db.session.commit(); created = True; print('created' if created else 'exists');")
+ADMIN_EXISTS=$($PYTHON_CMD -c "from app import app, db; from models import User; from werkzeug.security import generate_password_hash; app.app_context().push(); admin = User.query.filter_by(username='admin').first(); created = False; if not admin: admin = User(username='admin', password_hash=generate_password_hash('admin'), is_admin=True); db.session.add(admin); db.session.commit(); created = True; print('created' if created else 'exists');")
 
 if [ "$ADMIN_EXISTS" == "created" ]; then
     echo -e "${GREEN}Admin user created with default credentials:${NC}"

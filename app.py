@@ -25,8 +25,15 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "agnoster-default-secret")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Configure SQLite database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///agnoster.db")
+# Configure database
+db_url = os.environ.get("DATABASE_URL")
+if not db_url:
+    # Create instance directory if it doesn't exist
+    os.makedirs('instance', exist_ok=True)
+    db_url = f"sqlite:///{os.path.abspath('instance/agnoster.db')}"
+    logger.info(f"Using SQLite database at: {db_url}")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
