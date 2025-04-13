@@ -238,7 +238,11 @@ def api_all_pods():
 def api_start_namespace(namespace):
     try:
         start_namespace(namespace)
-        return jsonify({"status": "success", "message": f"Started namespace {namespace}"})
+        return jsonify({
+            "status": "success", 
+            "message": f"Started namespace {namespace}",
+            "demo_mode": DEMO_MODE
+        })
     except Exception as e:
         logger.error(f"Error starting namespace {namespace}: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -248,7 +252,11 @@ def api_start_namespace(namespace):
 def api_stop_namespace(namespace):
     try:
         stop_namespace(namespace)
-        return jsonify({"status": "success", "message": f"Stopped namespace {namespace}"})
+        return jsonify({
+            "status": "success", 
+            "message": f"Stopped namespace {namespace}",
+            "demo_mode": DEMO_MODE
+        })
     except Exception as e:
         logger.error(f"Error stopping namespace {namespace}: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -258,7 +266,11 @@ def api_stop_namespace(namespace):
 def api_destroy_namespace(namespace):
     try:
         destroy_namespace(namespace)
-        return jsonify({"status": "success", "message": f"Destroying namespace {namespace}"})
+        return jsonify({
+            "status": "success", 
+            "message": f"Destroying namespace {namespace}",
+            "demo_mode": DEMO_MODE
+        })
     except Exception as e:
         logger.error(f"Error destroying namespace {namespace}: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -268,7 +280,11 @@ def api_destroy_namespace(namespace):
 def api_reset_namespace(namespace):
     try:
         reset_namespace(namespace)
-        return jsonify({"status": "success", "message": f"Reset namespace {namespace}"})
+        return jsonify({
+            "status": "success", 
+            "message": f"Reset namespace {namespace}",
+            "demo_mode": DEMO_MODE
+        })
     except Exception as e:
         logger.error(f"Error resetting namespace {namespace}: {str(e)}")
         return jsonify({"error": str(e)}), 500

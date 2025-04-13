@@ -284,7 +284,7 @@ const ApiClient = {
   
   /**
    * Get all namespaces
-   * @returns {Promise<Array>} List of namespaces
+   * @returns {Promise<Object>} Response with namespaces and demo mode flag
    */
   async getNamespaces() {
     return this.fetch('/api/namespaces');
@@ -293,7 +293,7 @@ const ApiClient = {
   /**
    * Get pods in a namespace
    * @param {string} namespace - Namespace name
-   * @returns {Promise<Array>} List of pods
+   * @returns {Promise<Object>} Response with pods and demo mode flag
    */
   async getPods(namespace) {
     return this.fetch(`/api/pods/${namespace}`);
@@ -301,7 +301,7 @@ const ApiClient = {
   
   /**
    * Get all pods across namespaces
-   * @returns {Promise<Array>} List of pods
+   * @returns {Promise<Object>} Response with pods and demo mode flag
    */
   async getAllPods() {
     return this.fetch('/api/all_pods');
