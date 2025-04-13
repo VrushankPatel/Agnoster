@@ -179,6 +179,69 @@ const Utils = {
 
 // API client for backend communication
 const ApiClient = {
+  // Flag to check if connection is lost
+  _connectionLost: false,
+  
+  // Connection loss alert element
+  _connectionAlert: null,
+  
+  /**
+   * Show connection loss alert
+   */
+  showConnectionLossAlert() {
+    // Only show once
+    if (this._connectionLost) return;
+    
+    this._connectionLost = true;
+    
+    // Create alert if it doesn't exist
+    if (!this._connectionAlert) {
+      this._connectionAlert = document.createElement('div');
+      this._connectionAlert.className = 'shadcn-alert shadcn-alert-destructive connection-loss-alert';
+      this._connectionAlert.innerHTML = `
+        <div class="shadcn-alert-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-wifi-off">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+            <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+          </svg>
+        </div>
+        <div class="shadcn-alert-content">
+          <div class="shadcn-alert-title">Connection Lost</div>
+          <div class="shadcn-alert-description">
+            Unable to connect to the server. Please check your network connection, proxy settings, or VPN configuration.
+            <button class="shadcn-button shadcn-button-outline retry-button">Retry Connection</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(this._connectionAlert);
+      
+      // Add event listener to retry button
+      this._connectionAlert.querySelector('.retry-button').addEventListener('click', () => {
+        this.resetConnectionState();
+        window.location.reload();
+      });
+    } else {
+      // Show existing alert
+      this._connectionAlert.style.display = 'flex';
+    }
+  },
+  
+  /**
+   * Reset connection state
+   */
+  resetConnectionState() {
+    this._connectionLost = false;
+    if (this._connectionAlert) {
+      this._connectionAlert.style.display = 'none';
+    }
+  },
+  
   /**
    * Generic fetch with error handling
    * @param {string} url - API endpoint
@@ -201,9 +264,19 @@ const ApiClient = {
         throw new Error(data.error || 'An error occurred');
       }
       
+      // Connection restored if we got here
+      this.resetConnectionState();
+      
       return data;
     } catch (error) {
       console.error('API Error:', error);
+      
+      // Check if it's a network error (connection loss)
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        this.showConnectionLossAlert();
+        throw new Error('Connection to server lost. Please check your network settings.');
+      }
+      
       Utils.showToast(error.message, 'error');
       throw error;
     }
