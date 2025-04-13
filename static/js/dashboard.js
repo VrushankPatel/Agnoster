@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let namespaces = [];
   let pods = [];
   let config = {
+  let usingSampleData = false;
     shutdown_threshold: 14 // Default threshold in hours
   };
   
@@ -30,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       showLoading(true);
       
+      // Variable to track if we're using sample data
+      let backendConnected = false;
+      
       try {
         // Try to fetch data from the backend
         const [namespacesData, podsData, configData] = await Promise.all([
@@ -41,6 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
         namespaces = namespacesData;
         pods = podsData;
         config = configData;
+        
+        // Backend connection successful
+        backendConnected = true;
       } catch (error) {
         console.error('Failed to fetch data from backend:', error);
         
@@ -148,15 +155,12 @@ document.addEventListener('DOMContentLoaded', function() {
           monitoring_interval: 5
         };
         
-        // Set flag to indicate we're using sample data
-        usingSampleData = true;
-        
         // Show message about sample data
         Utils.showToast('Using sample data since backend connection failed. This is for demonstration purposes only.', 'info', 5000);
-      } else {
-        // Set flag to indicate we're not using sample data
-        usingSampleData = false;
       }
+      
+      // Set the sample data flag based on whether backend connected
+      usingSampleData = !backendConnected;
       
       // Update stats
       updateStats();
@@ -180,9 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
       loadingIndicator.style.display = show ? 'flex' : 'none';
     }
   }
-  
-  // Flag to track if we're using sample data
-  let usingSampleData = false;
   
   // Show error message
   function showError(message) {
