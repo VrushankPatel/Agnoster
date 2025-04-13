@@ -48,7 +48,8 @@ with app.app_context():
         get_all_namespaces, get_pods_in_namespace, 
         get_all_pods, check_namespaces_to_shutdown, 
         start_namespace, stop_namespace, 
-        destroy_namespace, reset_namespace
+        destroy_namespace, reset_namespace,
+        DEMO_MODE
     )
     
     # Create database tables
@@ -173,7 +174,7 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', is_admin=current_user.is_admin)
+    return render_template('dashboard.html', is_admin=current_user.is_admin, demo_mode=DEMO_MODE)
 
 @app.route('/admin')
 @login_required
@@ -189,7 +190,8 @@ def admin():
     return render_template('admin.html', 
                           config=config, 
                           blacklist=blacklist, 
-                          users=users)
+                          users=users,
+                          demo_mode=DEMO_MODE)
 
 # API endpoints
 @app.route('/api/namespaces')

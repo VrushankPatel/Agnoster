@@ -1,6 +1,8 @@
 import subprocess
 import json
 import logging
+import os
+import shutil
 from datetime import datetime, timedelta
 from models import Config, NamespaceBlacklist, NamespaceLog
 from app import db
@@ -9,8 +11,20 @@ from flask_login import current_user
 # Configure logging
 logger = logging.getLogger(__name__)
 
+# Check if we're in demo mode without kubectl
+DEMO_MODE = False
+if shutil.which('kubectl') is None:
+    logger.warning("kubectl not found in PATH, running in DEMO MODE with sample data")
+    DEMO_MODE = True
+
 def run_kubectl_command(command):
     """Run a kubectl command and return the output."""
+    # If we're in demo mode, don't try to run kubectl commands
+    if DEMO_MODE:
+        logger.debug(f"DEMO MODE: Skipping kubectl command: {command}")
+        # We'll handle specific commands in their respective functions
+        return "{}"  
+        
     try:
         logger.debug(f"Running kubectl command: {command}")
         result = subprocess.run(
@@ -29,6 +43,45 @@ def run_kubectl_command(command):
 
 def get_all_namespaces():
     """Get all Kubernetes namespaces."""
+    # In demo mode, provide sample namespace data
+    if DEMO_MODE:
+        logger.info("DEMO MODE: Returning sample namespace data")
+        
+        # Get blacklisted namespaces
+        blacklisted = [entry.namespace_name for entry in NamespaceBlacklist.query.all()]
+        
+        # Generate sample namespaces data
+        sample_namespaces = [
+            {
+                "name": "IAmNameSpace",
+                "status": "Active",
+                "created_at": (datetime.utcnow() - timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "pod_count": 3
+            },
+            {
+                "name": "default",
+                "status": "Active",
+                "created_at": (datetime.utcnow() - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "pod_count": 5
+            },
+            {
+                "name": "kube-system",
+                "status": "Active",
+                "created_at": (datetime.utcnow() - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "pod_count": 8
+            },
+            {
+                "name": "monitoring",
+                "status": "Pending",
+                "created_at": (datetime.utcnow() - timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "pod_count": 2
+            }
+        ]
+        
+        # Filter out blacklisted namespaces
+        return [ns for ns in sample_namespaces if ns["name"] not in blacklisted]
+    
+    # Normal mode - use kubectl
     command = "kubectl get namespaces -o json"
     output = run_kubectl_command(command)
     data = json.loads(output)
@@ -65,6 +118,26 @@ def get_all_namespaces():
 
 def get_pods_in_namespace(namespace):
     """Get all pods in a specific namespace."""
+    # In demo mode, provide sample pod data for the specified namespace
+    if DEMO_MODE:
+        logger.info(f"DEMO MODE: Returning sample pod data for namespace {namespace}")
+        
+        # Get all pods and filter by namespace
+        all_pods = get_all_pods()
+        namespace_pods = [pod for pod in all_pods if pod["namespace"] == namespace]
+        
+        # Add container info for demo mode
+        for pod in namespace_pods:
+            pod["containers"] = [
+                {
+                    "name": f"{pod['name']}-container",
+                    "image": "sample-image:latest"
+                }
+            ]
+        
+        return namespace_pods
+    
+    # Normal mode - use kubectl
     command = f"kubectl get pods -n {namespace} -o json"
     output = run_kubectl_command(command)
     data = json.loads(output)
@@ -106,6 +179,84 @@ def get_pods_in_namespace(namespace):
 
 def get_all_pods():
     """Get all pods across all namespaces."""
+    # In demo mode, provide sample pod data
+    if DEMO_MODE:
+        logger.info("DEMO MODE: Returning sample pod data")
+        
+        # Get blacklisted namespaces
+        blacklisted = [entry.namespace_name for entry in NamespaceBlacklist.query.all()]
+        
+        # Generate sample pods data
+        sample_pods = [
+            # IAmNameSpace pods
+            {
+                "namespace": "IAmNameSpace",
+                "name": "webapp-deployment-7b6f8d97b9-xv8j2",
+                "status": "Running",
+                "created_at": (datetime.utcnow() - timedelta(hours=20)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 20
+            },
+            {
+                "namespace": "IAmNameSpace",
+                "name": "database-statefulset-0",
+                "status": "Running",
+                "created_at": (datetime.utcnow() - timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 48
+            },
+            {
+                "namespace": "IAmNameSpace",
+                "name": "cache-deployment-5b9c67f4d-9zjkt",
+                "status": "Running",
+                "created_at": (datetime.utcnow() - timedelta(hours=10)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 10
+            },
+            
+            # default namespace pods
+            {
+                "namespace": "default",
+                "name": "nginx-ingress-controller-7c4678db65-abcd1",
+                "status": "Running",
+                "created_at": (datetime.utcnow() - timedelta(hours=100)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 100
+            },
+            {
+                "namespace": "default",
+                "name": "redis-master-0",
+                "status": "Running",
+                "created_at": (datetime.utcnow() - timedelta(hours=90)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 90
+            },
+            
+            # kube-system pods
+            {
+                "namespace": "kube-system",
+                "name": "kube-scheduler-node-1",
+                "status": "Running",
+                "created_at": (datetime.utcnow() - timedelta(hours=300)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 300
+            },
+            {
+                "namespace": "kube-system",
+                "name": "kube-controller-manager-node-1",
+                "status": "Running",
+                "created_at": (datetime.utcnow() - timedelta(hours=300)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 300
+            },
+            
+            # monitoring namespace pods
+            {
+                "namespace": "monitoring",
+                "name": "prometheus-server-799c7b84f9-efghi",
+                "status": "Pending",
+                "created_at": (datetime.utcnow() - timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "runtime_hours": 2
+            }
+        ]
+        
+        # Filter out blacklisted namespaces
+        return [pod for pod in sample_pods if pod["namespace"] not in blacklisted]
+        
+    # Normal mode - use kubectl
     command = "kubectl get pods --all-namespaces -o json"
     output = run_kubectl_command(command)
     data = json.loads(output)
