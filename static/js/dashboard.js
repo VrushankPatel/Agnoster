@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // State
   let namespaces = [];
   let pods = [];
-  let config = {
   let usingSampleData = false;
+  let config = {
     shutdown_threshold: 14 // Default threshold in hours
   };
   
