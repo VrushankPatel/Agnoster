@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Agnoster{% endblock %}
+
+{% block full_content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-logo">
+            <h1>Agnoster</h1>
+            <p>Kubernetes Namespace Management</p>
+        </div>
+        
+        <form class="login-form" method="post" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="shadcn-input" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="shadcn-input" required>
+            </div>
+            
+            <button type="submit" class="button shadcn-button shadcn-button-primary">
+                <span data-icon="user"></span>
+                Sign In
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

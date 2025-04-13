@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Agnoster - Kubernetes Namespace Management{% endblock %}</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/shadcn.css') }}">
+    <!-- Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message" data-category="{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block full_content %}
+        {% if current_user.is_authenticated %}
+            <div class="layout">
+                <header class="header">
+                    <div class="header-logo">
+                        <h1>Agnoster</h1>
+                    </div>
+                    <nav class="header-nav">
+                        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' else '' }}">Dashboard</a>
+                        {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin') }}" class="{{ 'active' if request.endpoint == 'admin' else '' }}">Admin</a>
+                        {% endif %}
+                    </nav>
+                    <div class="header-actions">
+                        <div class="shadcn-dropdown">
+                            <button class="shadcn-button shadcn-button-ghost" data-dropdown-toggle="user-dropdown">
+                                <span data-icon="user"></span>
+                                {{ current_user.username }}
+                            </button>
+                            <div class="shadcn-dropdown-content" id="user-dropdown">
+                                <div class="shadcn-dropdown-item">
+                                    <span data-icon="user"></span>
+                                    Profile
+                                </div>
+                                <div class="shadcn-dropdown-separator"></div>
+                                <a href="{{ url_for('logout') }}" class="shadcn-dropdown-item">
+                                    <span data-icon="logout"></span>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <main class="main">
+                    <div class="container">
+                        {% block content %}{% endblock %}
+                    </div>
+                </main>
+            </div>
+        {% else %}
+            {% block content_unauthenticated %}{% endblock %}
+        {% endif %}
+    {% endblock %}
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/components.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

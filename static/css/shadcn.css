@@ -1,0 +1,554 @@
+/* ShadCN UI styles customized for Agnoster */
+
+/* General resets */
+button {
+  all: unset;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--foreground);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-size: 1.875rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1.125rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  line-height: 1.5;
+}
+
+/* Input elements */
+.shadcn-input {
+  background-color: var(--input);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.shadcn-input:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.shadcn-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+/* Button variants */
+.shadcn-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.shadcn-button:focus {
+  outline: none;
+}
+
+.shadcn-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shadcn-button-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.shadcn-button-primary:hover {
+  background-color: #1daf55;
+}
+
+.shadcn-button-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.shadcn-button-secondary:hover {
+  background-color: #2a2a2f;
+}
+
+.shadcn-button-destructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.shadcn-button-destructive:hover {
+  background-color: #dc2626;
+}
+
+.shadcn-button-outline {
+  background-color: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.shadcn-button-outline:hover {
+  background-color: var(--muted);
+  border-color: var(--foreground);
+}
+
+.shadcn-button-ghost {
+  background-color: transparent;
+  color: var(--foreground);
+}
+
+.shadcn-button-ghost:hover {
+  background-color: var(--accent);
+}
+
+.shadcn-button-link {
+  background-color: transparent;
+  color: var(--primary);
+  text-decoration: underline;
+  padding: 0;
+  height: auto;
+}
+
+/* Badge */
+.shadcn-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0.25rem 0.6rem;
+  white-space: nowrap;
+}
+
+.shadcn-badge-default {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.shadcn-badge-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.shadcn-badge-outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.shadcn-badge-destructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+/* Card */
+.shadcn-card {
+  background-color: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.shadcn-card-header {
+  padding: 1.5rem 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shadcn-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--card-foreground);
+}
+
+.shadcn-card-description {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.shadcn-card-content {
+  padding: 1.5rem;
+}
+
+.shadcn-card-footer {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Dropdown menu */
+.shadcn-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.shadcn-dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 160px;
+  background-color: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  right: 0;
+}
+
+.shadcn-dropdown-content.active {
+  display: block;
+}
+
+.shadcn-dropdown-item {
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  border-radius: calc(var(--radius) - 0.25rem);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--popover-foreground);
+}
+
+.shadcn-dropdown-item:hover {
+  background-color: var(--accent);
+}
+
+.shadcn-dropdown-separator {
+  height: 1px;
+  background-color: var(--border);
+  margin: 0.5rem 0;
+}
+
+/* Form elements */
+.shadcn-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.shadcn-form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shadcn-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.shadcn-form-message {
+  font-size: 0.75rem;
+  color: var(--destructive);
+  margin-top: 0.25rem;
+}
+
+.shadcn-form-description {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+/* Tooltip */
+.shadcn-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.shadcn-tooltip-content {
+  visibility: hidden;
+  width: 120px;
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
+}
+
+.shadcn-tooltip:hover .shadcn-tooltip-content {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Alert */
+.shadcn-alert {
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.shadcn-alert-default {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+.shadcn-alert-destructive {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--destructive);
+}
+
+.shadcn-alert-success {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: var(--primary);
+}
+
+.shadcn-alert-icon {
+  margin-top: 0.25rem;
+}
+
+.shadcn-alert-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.shadcn-alert-description {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Toast */
+.shadcn-toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.5rem;
+  z-index: 9999;
+  max-width: 420px;
+}
+
+.shadcn-toast {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+  max-width: 100%;
+}
+
+.shadcn-toast.active {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.shadcn-toast-content {
+  flex: 1;
+}
+
+.shadcn-toast-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+}
+
+.shadcn-toast-description {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.shadcn-toast-close {
+  color: var(--muted-foreground);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.shadcn-toast-close:hover {
+  color: var(--foreground);
+}
+
+/* Dialog/Modal */
+.shadcn-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease-out;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.shadcn-dialog {
+  background-color: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 28rem;
+  width: 100%;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  animation: dialogIn 0.2s ease-out;
+  position: relative;
+}
+
+.shadcn-dialog-header {
+  padding: 1.5rem 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shadcn-dialog-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--card-foreground);
+}
+
+.shadcn-dialog-description {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.shadcn-dialog-content {
+  padding: 1.5rem;
+}
+
+.shadcn-dialog-footer {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.shadcn-dialog-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem;
+  border-radius: 9999px;
+}
+
+.shadcn-dialog-close:hover {
+  color: var(--foreground);
+  background-color: var(--muted);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Toggle Switch */
+.shadcn-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+}
+
+.shadcn-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.shadcn-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--muted);
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.shadcn-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--card);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.shadcn-switch input:checked + .shadcn-switch-slider {
+  background-color: var(--primary);
+}
+
+.shadcn-switch input:checked + .shadcn-switch-slider:before {
+  transform: translateX(16px);
+}

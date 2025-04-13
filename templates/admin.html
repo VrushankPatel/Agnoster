@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Agnoster{% endblock %}
+
+{% block content %}
+<div class="admin-page" id="admin-page">
+    <section>
+        <h2 class="section-title">System Configuration</h2>
+        <div class="card">
+            <form id="config-form" class="config-form">
+                <div class="form-group">
+                    <label for="shutdown_threshold" class="shadcn-label">Shutdown Threshold (hours)</label>
+                    <input type="number" id="shutdown_threshold" name="shutdown_threshold" class="shadcn-input" min="1" max="336" value="14" required>
+                    <p class="shadcn-form-description">Pods running longer than this threshold will trigger namespace shutdown</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="monitoring_interval" class="shadcn-label">Monitoring Interval (minutes)</label>
+                    <input type="number" id="monitoring_interval" name="monitoring_interval" class="shadcn-input" min="1" max="60" value="5" required>
+                    <p class="shadcn-form-description">How often the system checks for namespaces to shut down</p>
+                </div>
+                
+                <button type="submit" class="shadcn-button shadcn-button-primary">
+                    <span data-icon="settings"></span>
+                    Save Configuration
+                </button>
+            </form>
+        </div>
+    </section>
+    
+    <section>
+        <h2 class="section-title">Namespace Blacklist</h2>
+        <div class="card blacklist-container">
+            <p class="shadcn-form-description">Namespaces in the blacklist will never be shut down and won't appear in the dashboard</p>
+            
+            <form id="blacklist-form" class="blacklist-form">
+                <input type="text" id="namespace_name" name="namespace_name" class="shadcn-input" placeholder="Enter namespace name..." required>
+                <button type="submit" class="shadcn-button shadcn-button-primary">
+                    <span data-icon="plus"></span>
+                    Add
+                </button>
+            </form>
+            
+            <div id="blacklist-items" class="blacklist-items">
+                <!-- Blacklist items will be populated here dynamically -->
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <h2 class="section-title">User Management</h2>
+        <div class="card">
+            <div class="user-controls">
+                <button id="new-user-btn" class="shadcn-button shadcn-button-primary">
+                    <span data-icon="plus"></span>
+                    New User
+                </button>
+            </div>
+            
+            <div id="user-form-container" class="user-form-container" style="display: none;">
+                <h3>Create New User</h3>
+                <form id="user-form" class="shadcn-form">
+                    <div class="shadcn-form-item">
+                        <label for="username" class="shadcn-label">Username</label>
+                        <input type="text" id="username" name="username" class="shadcn-input" required>
+                    </div>
+                    
+                    <div class="shadcn-form-item">
+                        <label for="password" class="shadcn-label">Password</label>
+                        <input type="password" id="password" name="password" class="shadcn-input">
+                        <p class="shadcn-form-description">Leave blank to keep current password when editing</p>
+                    </div>
+                    
+                    <div class="shadcn-form-item">
+                        <div class="flex">
+                            <input type="checkbox" id="is_admin" name="is_admin">
+                            <label for="is_admin" class="shadcn-label">Admin User</label>
+                        </div>
+                        <p class="shadcn-form-description">Admin users can access this administration panel</p>
+                    </div>
+                    
+                    <div class="user-form-actions">
+                        <button type="button" id="cancel-user-btn" class="shadcn-button shadcn-button-outline">Cancel</button>
+                        <button type="submit" class="shadcn-button shadcn-button-primary">Save User</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="table-container">
+                <table class="users-list">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>First Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-list">
+                        <!-- User list will be populated here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
