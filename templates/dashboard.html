@@ -4,6 +4,13 @@
 
 {% block content %}
 <div class="dashboard" id="dashboard-page">
+    {% if demo_mode %}
+    <div class="sample-data-notice">
+        <span data-icon="info"></span>
+        <span><strong>Demo Mode:</strong> kubectl not detected. Displaying sample data for demonstration purposes.</span>
+    </div>
+    {% endif %}
+    
     <div class="dashboard-header">
         <div class="dashboard-title">
             <h2>Kubernetes Namespaces</h2>

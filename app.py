@@ -199,7 +199,10 @@ def admin():
 def api_namespaces():
     try:
         namespaces = get_all_namespaces()
-        return jsonify(namespaces)
+        return jsonify({
+            "data": namespaces,
+            "demo_mode": DEMO_MODE
+        })
     except Exception as e:
         logger.error(f"Error getting namespaces: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -209,7 +212,10 @@ def api_namespaces():
 def api_pods(namespace):
     try:
         pods = get_pods_in_namespace(namespace)
-        return jsonify(pods)
+        return jsonify({
+            "data": pods,
+            "demo_mode": DEMO_MODE
+        })
     except Exception as e:
         logger.error(f"Error getting pods for namespace {namespace}: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -219,7 +225,10 @@ def api_pods(namespace):
 def api_all_pods():
     try:
         pods = get_all_pods()
-        return jsonify(pods)
+        return jsonify({
+            "data": pods,
+            "demo_mode": DEMO_MODE
+        })
     except Exception as e:
         logger.error(f"Error getting all pods: {str(e)}")
         return jsonify({"error": str(e)}), 500

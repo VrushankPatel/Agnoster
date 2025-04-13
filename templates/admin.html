@@ -4,6 +4,13 @@
 
 {% block content %}
 <div class="admin-page" id="admin-page">
+    {% if demo_mode %}
+    <div class="sample-data-notice">
+        <span data-icon="info"></span>
+        <span><strong>Demo Mode:</strong> kubectl not detected. Displaying sample data for demonstration purposes.</span>
+    </div>
+    {% endif %}
+    
     <section>
         <h2 class="section-title">System Configuration</h2>
         <div class="card">
