@@ -1,0 +1,196 @@
+Below is a consolidated and refined version of the project requirements for Agnoster, incorporating the elements from your original draft along with additional details to ensure clarity for the development team. You can share this document with the company to guide the development process.
+
+---
+
+# Agnoster Project Requirements
+
+## 1. Project Overview
+
+**Project Name:** Agnoster  
+**Description:**  
+Agnoster is a Kubernetes namespace management system designed to monitor and control the lifecycle of pods and services. The system automatically identifies and shuts down namespaces running pods longer than a configurable duration (default is 14 hours). The application runs inside a container and interacts with Kubernetes clusters by executing `kubectl` commands, ensuring that operational tasks are performed directly within the Kubernetes environment.
+
+---
+
+## 2. Core Functionality
+
+### 2.1 Kubernetes Monitoring
+
+- **Pod and Namespace Retrieval:**
+  - Use `kubectl get pods --all-namespaces` to fetch all pods across every namespace.
+  - Use `kubectl get namespaces` to list all namespaces.
+
+- **Data Grouping and Analysis:**
+  - Group pods by their namespace.
+  - Track the runtime of each pod.
+  - Identify namespaces where one or more pods have been running beyond the configured threshold (default: 14 hours).
+
+- **Automated Shutdown:**
+  - Mark any namespace with pods running over the threshold for shutdown.
+  - Trigger a shutdown by logging a message (e.g., `print("Shutting down " + namespace)`); placeholder logic to be extended later.
+  
+- **Background Monitoring:**
+  - Start a background thread on application launch.
+  - Every 5 minutes, the thread should review each namespace (excluding those in a predefined blacklist) and invoke the shutdown mechanism if necessary.
+  
+- **Blacklist Management:**
+  - Maintain a list of namespaces that are exempt from automated shutdown.
+  - Exclude blacklisted namespaces from both the monitoring thread’s checks and the UI list.
+  - The blacklist should be configurable:
+    - **At startup:** A default list embedded in the code.
+    - **Via UI:** Allow the admin to modify the list dynamically.
+
+### 2.2 Shutdown Process
+
+- **Initial Implementation:**
+  - Represent shutdown with a logged output (`print("Shutting down " + namespace_variable)`).
+- **Future Enhancements:**
+  - Replace the placeholder with more complex shutdown logic as requirements evolve.
+
+---
+
+## 3. Technical Requirements
+
+### 3.1 Backend
+
+- **Framework & Language:** Python using the Flask framework.
+- **API Design:**
+  - RESTful endpoints to handle all operations (namespace listing, pod details, action commands, configuration updates, and user management).
+  - Clearly documented endpoints with comprehensive comments and placeholder sections for future logic.
+- **Command-Line Integration:**
+  - Leverage `kubectl` for retrieving Kubernetes metadata.
+- **Multithreading:**
+  - Launch a dedicated background thread at startup that periodically (every 5 minutes) checks the runtime of pods.
+- **Logging:**
+  - Implement a logging mechanism to track operations, actions, and shutdown events.
+
+- **Data Persistence:**
+  - Secure storage of user credentials.
+  - Preserve configuration settings (shutdown threshold, blacklist) across application restarts.
+  - Store data using a persistent method (file/database) as needed.
+
+### 3.2 Frontend
+
+- **Endpoint:** The UI is served on the `/ui` endpoint by the Flask application.
+- **Technologies:** Plain HTML, CSS, and JavaScript (no additional frameworks required).
+- **Design:**
+  - Clean and modern with a default dark mode.
+  - Responsive layout that adjusts to varying screen sizes.
+  - Prominent branding with the title “Agnoster”.
+- **Data Handling:**
+  - Real-time updating of namespace and pod data every 5 seconds (using either JavaScript polling or web sockets).
+- **User Interaction:**
+  - Clickable namespaces to drill down into pod details.
+  - Display metadata and status information for both namespaces and pods.
+
+### 3.3 Action Controls
+
+For every namespace listed on the UI, include the following interactive buttons:
+
+- **Start Button:**  
+  - Green background with a play icon.
+  - Activates or initiates monitoring for the namespace.
+  
+- **Stop Button:**  
+  - Red background with a stop icon.
+  - Deactivates monitoring and logs a shutdown message.
+  
+- **Destroy Button:**  
+  - Maroon/danger style with a danger icon.
+  - Initiates a process to permanently destroy the namespace (with an appropriate tooltip explaining the action).
+  
+- **Reset Button:**  
+  - Uses a reset icon combined with a warning icon.
+  - Resets the monitoring state for the namespace.
+
+Each button, when clicked, will send a request to the backend. The corresponding API endpoints will log the action and include comment placeholders for adding more refined logic later.
+
+---
+
+## 4. Authentication and User Management
+
+### 4.1 Login and Session Management
+
+- **Login Page:**
+  - Require a username and password for access.
+  - Default admin credentials: `admin` / `admin`.
+  
+- **First-Time Admin Login:**
+  - Force a password change immediately after the default admin logs in for the first time.
+  - After the password is changed, log out the user, requiring a re-login with updated credentials.
+  
+- **User Roles:**
+  - **Admin:** Can change configuration settings (shutdown threshold, blacklist), manage user accounts, and modify UI sensitive settings.
+  - **Regular Users:** Can view real-time data and namespace details but cannot alter system configurations.
+  
+- **User Management:**
+  - The admin has an interface for creating and managing additional user accounts.
+  - User session persistence must be implemented to ensure secure access across sessions.
+
+---
+
+## 5. Administrative Configuration
+
+### 5.1 Configurable Parameters (Admin Only)
+
+- **Shutdown Threshold:**
+  - The default pod runtime threshold is 14 hours, but this should be configurable through the admin interface.
+  
+- **Blacklist:**
+  - An admin should be able to manage a list of namespaces that must never be shut down.
+  - These namespaces are excluded from monitoring and do not appear in the UI.
+
+---
+
+## 6. Environment, Security, and Development Standards
+
+### 6.1 Container Deployment
+
+- **Deployment Environment:**
+  - Agnoster runs in a containerized environment with access to `kubectl` and the necessary RBAC permissions.
+  
+### 6.2 Security Considerations
+
+- **Authentication:**  
+  - All operations require user authentication.
+- **Role-Based Access Control (RBAC):**
+  - Differentiate actions for admin versus regular users.
+- **Data Protection:**
+  - Secure storage of sensitive information and configuration settings.
+- **Access Restrictions:**
+  - Ensure protected namespaces (e.g., blacklisted ones) are not exposed to unauthorized user modifications.
+
+### 6.3 Development Guidelines
+
+- **Project Structure:**
+  - Separate backend and frontend logic clearly.
+  - Include a `requirements.txt` file for Python dependencies.
+  
+- **Code Quality:**
+  - Write clean, well-documented code with comprehensive inline comments.
+  - Follow RESTful API design principles.
+  - Place placeholder comments in areas where future logic will be implemented.
+  
+- **API Documentation:**
+  - Ensure all endpoints and functions are documented to aid future development.
+
+---
+
+## 7. Future Enhancements
+
+- **Enhanced Shutdown Logic:**  
+  - Replace logging placeholders with fully developed shutdown procedures.
+  
+- **Advanced Monitoring:**  
+  - Refine how pod runtimes are tracked and report detailed metrics.
+  
+- **User Experience Improvements:**  
+  - Enhance the UI with additional features, such as notifications or more advanced filtering for namespaces and pods.
+  
+- **Scalability and Resilience:**
+  - Consider horizontal scaling for environments with large numbers of namespaces/pods.
+  - Expand error handling and recovery mechanisms.
+
+---
+
+This final requirements document merges both your original version and the earlier detailed version, ensuring that all aspects—including Kubernetes monitoring, shutdown automation, user authentication, and both backend and frontend architecture—are comprehensively covered. Adjust or further detail specific areas as the project progresses.
